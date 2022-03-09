@@ -1,0 +1,1 @@
+CONVERSIONS = {"SHL"} #Note this is an ordered dict (python 3.7+)
