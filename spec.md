@@ -126,7 +126,7 @@ VAR (30) <WORD>
 
 Defines a new variable. The code is one word and is used to put the value of the variable on the stack, and must usually be in the range 128-255. Variables can be redefined (this is in fact the only way they can be changed)
 
-### Reserved variables
+### Reserved values
 
 The variables in the range 32-63 are reserved. They are explained below, including defaults and if they can be reassigned to a new value (r) or if this gives an error (nothing):
 
@@ -135,6 +135,8 @@ If 0, use binary input and output
 If -1, use ascii
 If >0 convert to a base n integer (going 0-9,a-z,A-Z and then through unicode codepoints)
 If < -1, give an error
+
+63 NULL:
 
 ## Return
 
