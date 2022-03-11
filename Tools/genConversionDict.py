@@ -2,7 +2,7 @@
     prints a dict that matches words to their zero-width equivalent
 """
 
-WORDS = ["SHL","SHR","BOR","BAND","BNOT","EQ","PLUS","MINUS","TIMES","DIV","MOD","INC","DEC","SWAP","DUP","OVER","ROT","DROP","PUT","IF","ELSE","ENDIF","WHILE","ENDWHILE","PRINT","INPUT","WRITE","READ","PROC","ENDPROC","VAR","RET"]
+WORDS = ["SHL","SHR","BOR","BAND","BNOT","BXOR","EQ","PLUS","MINUS","TIMES","DIV","MOD","LESS","GREAT","INC","DEC","DROP","DROPN","PUT","IF","ELSE","ENDIF","WHILE","ENDWHILE","PRINT","INPUT","WRITE","READ","PROC","ENDPROC","VAR","RET"]
 print(len(WORDS))
 outputStr = "{"
 
