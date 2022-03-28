@@ -1,1 +1,5 @@
-SHL
+PUT 1 VAR 32 #set_to_ascii_print_mode
+PUT 'H'
+PUT 8 SHL
+PUT 'i' PLUS
+PRINT

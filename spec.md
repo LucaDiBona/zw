@@ -122,14 +122,14 @@ PROC (28) <WORD>... ENDPROC (29)
 
 Defines a new procedure. The code is one word and is used to call the procedure, and must be in the range 64-127
 
-StdLib defines procs in the range 128-191, although these can be overidden
+StdLib defines procs in the range 128-191, although these can be overridden
 
 ## Variables
 
 VAR (30) <WORD>
--> x
+x ->
 
-Defines a new variable. The code is one word and is used to put the value of the variable on the stack, and must usually be in the range 192-255. Variables can be redefined (this is in fact the only way they can be changed)
+Defines a new variable. The code is one word and is used to put the value on the top of the stack into that variable, and must usually be in the range 192-255. Variables can be redefined (this is in fact the only way they can be changed)
 
 ### Reserved values
 

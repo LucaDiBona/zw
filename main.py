@@ -6,6 +6,8 @@ WORDS = ["SHL","SHR","BOR","BAND","BNOT","BXOR","EQ","PLUS","MINUS","TIMES","DIV
 
 RESERVED_VARS = {"IOMODE" : 32}
 
+DEFAULT_RESERVED_VARS = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+
 DEBUG = True # prints the stack at every step
 #TODO flag
 
@@ -68,6 +70,8 @@ def interpret(comList:list) -> str:
         print(stack)
 
     procs = []
+    for i in range(128):
+        procs.append([])
 
     def getProc(n:int) -> list:
         if n < 64 or n > 191:
@@ -79,8 +83,10 @@ def interpret(comList:list) -> str:
             print("ERROR - PROC OUT OF RANGE")
         procs[n-64] = val
 
-    reservedVars = []
+    reservedVars = DEFAULT_RESERVED_VARS
     vars = []
+    for i in range(64):
+        vars.append(0)
 
     def getVar(n:int) -> int:
         if n >= 192:
@@ -93,10 +99,11 @@ def interpret(comList:list) -> str:
             print("ERROR - VAR OUT OF RANGE")
 
     def setVar(n:int,val:int) -> None:
+        print((n,val))
         if n >= 128:
             if n > 255:
                 print("ERROR - VAR OUT OF RANGE")
-            reservedVars[n-128] = val
+            vars[n-128] = val
         elif n > 31 and n < 64:
             reservedVars[n-32] = val
         else:
@@ -133,7 +140,10 @@ def interpret(comList:list) -> str:
 
     def evalWord(i:int,wordObj) -> None:
 
-        word = WORDS[wordObj.val]
+        try:
+            word = WORDS[wordObj.val]
+        except IndexError:
+            raise ValueError("Expected instruction token")
 
         if word == "SHL":
             b = stack.pop()
@@ -225,7 +235,8 @@ def interpret(comList:list) -> str:
                 n -= 1
 
         elif word == "PUT":
-            stack.append(comList[i+1])
+            print(comList[i+1].val)
+            stack.append(comList[i+1].val)
             return(i+2)
 
         elif word == "IF":
@@ -250,12 +261,16 @@ def interpret(comList:list) -> str:
 
         elif word == "PRINT":
 
+            print("print")
+            print(getVar(32))
+
             a = stack.pop()
 
-            if reservedVars[RESERVED_VARS["IOMODE"]] == 0:
+            if getVar(RESERVED_VARS["IOMODE"]) == 0:
                 pass
 
             else:
+                print(f"PRINTING {a}")
                 print(toAsciiStr(a))
 
         elif word == "INPUT":
@@ -277,7 +292,12 @@ def interpret(comList:list) -> str:
             pass
 
         elif word == "VAR":
-            pass
+            print(stack)
+            a = stack.pop()
+            setVar(comList[i+1].val,a)
+            print(vars)
+            print(reservedVars)
+            return(i+2)
 
         elif word == "RET":
             pass
@@ -288,7 +308,11 @@ def interpret(comList:list) -> str:
 
     i = 0
     while i < len(comList):
-        target = evalWord(i,comList[i])
+        try:
+            target = evalWord(i,comList[i])
+        except ValueError:
+            print(f"Expected instruction token at {i}")
+            break
         if target == None:
             i+= 1
         else:

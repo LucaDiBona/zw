@@ -1,7 +1,7 @@
 
 def wordToInt(word:str) -> int:
         if len(word) != 4:
-            raise InvalidWordErr(f"Expected word of length 4, got word of length {len(word)}")
+            raise ValueError(f"Expected word of length 4, got word of length {len(word)}")
         binStr = ""
         for i in word:
             if i == "​":
@@ -34,7 +34,7 @@ def getCat(word:int) -> str:
     elif word == 31:
         return("RET")
     else:
-        print("ERROR - INVALID WORD")
+        return("NO_CMD")
 
 class Word():
 
