@@ -1,14 +1,17 @@
 from execeptions import *
 from word import Word
+from buffer import Buffer
 import sys
 
 WORDS = ["SHL","SHR","BOR","BAND","BNOT","BXOR","EQ","PLUS","MINUS","TIMES","DIV","MOD","LESS","GREAT","INC","DEC","DROP","DROPN","PUT","IF","ELSE","ENDIF","WHILE","ENDWHILE","PRINT","INPUT","WRITE","READ","PROC","ENDPROC","VAR","RET"]
 
-RESERVED_VARS = {"IOMODE" : 32}
+RESERVED_VARS = {"IOMODE" : 32,"WRITEMODE": 33}
 
 DEFAULT_RESERVED_VARS = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
-DEBUG = True # prints the stack at every step
+DEBUG = False # prints the stack at every step
+
+buffer = Buffer()
 #TODO flag
 
 def parse(text:str) -> list:
@@ -84,26 +87,28 @@ def interpret(comList:list) -> str:
         procs[n-64] = val
 
     reservedVars = DEFAULT_RESERVED_VARS
-    vars = []
+    vars_ = []
     for i in range(64):
-        vars.append(0)
+        vars_.append(0)
+
 
     def getVar(n:int) -> int:
         if n >= 192:
             if n > 255:
                 print("ERROR - VAR OUT OF RANGE")
-            return(vars[n-128])
+            return(vars_[n-128])
         elif n > 31 and n < 64:
             return(reservedVars[n-32])
         else:
             print("ERROR - VAR OUT OF RANGE")
 
     def setVar(n:int,val:int) -> None:
-        print((n,val))
+        if DEBUG:
+            print((n,val))
         if n >= 128:
             if n > 255:
                 print("ERROR - VAR OUT OF RANGE")
-            vars[n-128] = val
+            vars_[n-128] = val
         elif n > 31 and n < 64:
             reservedVars[n-32] = val
         else:
@@ -121,8 +126,9 @@ def interpret(comList:list) -> str:
 
         for i in range(size):
             letter = n >> (8*((size-i)-1))
-            print(letter - 128)
-            print(chr(letter - 128))
+            if DEBUG:
+                print(letter - 128)
+                print(chr(letter - 128))
             outputStr += chr(letter - 128)
             n = n - (letter * (2**(8*((size-i)-1))))
 
@@ -235,7 +241,8 @@ def interpret(comList:list) -> str:
                 n -= 1
 
         elif word == "PUT":
-            print(comList[i+1].val)
+            if DEBUG:
+                print(comList[i+1].val)
             stack.append(comList[i+1].val)
             return(i+2)
 
@@ -260,9 +267,9 @@ def interpret(comList:list) -> str:
                 return(None)
 
         elif word == "PRINT":
-
-            print("print")
-            print(getVar(32))
+            if DEBUG:
+                print("print")
+                print(getVar(32))
 
             a = stack.pop()
 
@@ -270,7 +277,8 @@ def interpret(comList:list) -> str:
                 pass
 
             else:
-                print(f"PRINTING {a}")
+                if DEBUG:
+                    print(f"PRINTING {a}")
                 print(toAsciiStr(a))
 
         elif word == "INPUT":
@@ -280,10 +288,52 @@ def interpret(comList:list) -> str:
                 stack.append(fromAsciiStr(a))
 
         elif word == "WRITE":
-            pass
+
+            fileName = toAsciiStr(stack.pop())
+            contents = toAsciiStr(stack.pop())
+
+            writeMode = getVar(RESERVED_VARS["WRITEMODE"])
+            ioMode = getVar(RESERVED_VARS["IOMODE"])
+
+            if writeMode == 0:
+                mode = "a"
+            elif writeMode > 0:
+                mode = "w"
+            else:
+                mode = "x"
+            if ioMode == 0:
+                mode += "b"
+            else:
+                mode += "t"
+
+            if fileName == 0:
+                f = buffer
+                f.open(mode)
+            else:
+                f = open(fileName,mode)
+
+            f.write(contents)
+            f.close()
+
 
         elif word == "READ":
-            pass
+
+            fileName = toAsciiStr(stack.pop())
+
+            if getVar(RESERVED_VARS["IOMODE"]) == 0:
+                mode = "rb"
+            else:
+                mode = "rt"
+
+            if fileName == 0:
+                f = buffer
+                f.open(mode)
+            else:
+                f = open(fileName,mode)
+
+            stack.append(fromAsciiStr(f.read()))
+            f.close()
+
 
         elif word == "PROC":
             pass
@@ -292,18 +342,20 @@ def interpret(comList:list) -> str:
             pass
 
         elif word == "VAR":
-            print(stack)
+            if DEBUG:
+                print(stack)
             a = stack.pop()
             setVar(comList[i+1].val,a)
-            print(vars)
-            print(reservedVars)
+            if DEBUG:
+                print(vars_)
+                print(reservedVars)
             return(i+2)
 
         elif word == "RET":
             pass
 
-
-        print(stack)
+        if DEBUG:
+            print(stack)
 
 
     i = 0
@@ -324,5 +376,3 @@ code = f.read()
 f.close()
 
 interpret(parse(code))
-
-#print(parse("AAAABBBBCCCCDDDD"))

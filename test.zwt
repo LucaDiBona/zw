@@ -1,5 +1,10 @@
 PUT 1 VAR 32 #set_to_ascii_print_mode
-PUT 'H'
+PUT 'H' #put_literal_h_on_the_stack
 PUT 8 SHL
-PUT 'i' PLUS
+PUT 'i' PLUS #puts_i_on_the_stack_and_combines_it_with_the_H
+PUT 1 VAR 33 #set_to_overwrite_mode
+PUT 't'
+WRITE
+PUT 't'
+READ
 PRINT

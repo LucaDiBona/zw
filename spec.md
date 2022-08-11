@@ -107,7 +107,7 @@ Takes input from the user in the current mode
 WRITE (26):
 x y ->
 
-Writes to a file in the current mode with the file always in ascii. If the filename is 0 uses a buffer "file"
+Writes x to a file y in the current mode with the file always in ascii. If the filename is 0 uses a buffer "file"
 
 READ (27):
 x -> y
@@ -138,6 +138,11 @@ The variables in the range 32-63 are reserved. They are explained below, includi
 32 IOMODE=0 (r):
 If 0, use binary input and output
 If nonzero, use ascii
+
+33 WRITEMODE=0 (r):
+If 0, WRITE appends to file
+If positive, WRITE overwrites file
+If negative, WRITE creates file
 
 48-63 RESERVED (r):
 Reserved for stdlib procs to use although these can be overriden, stdlib procs may change them
